@@ -1,34 +1,34 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 export default function HeroSection() {
 	const name = 'Rahul Chaurasiya';
-	const positions = [
+	const skills = [
+		'Node.js',
+		'TypeScript',
+		'React',
+		'Python',
+		'Java',
+		'SQL',
+		'MongoDB',
+		'AWS',
+		'Docker',
+		'Git',
+	];
+
+	const positions = useMemo(() => [
 		'Software Developer 💻',
 		'API Specialist 🔌',
-		'Backend Developer 🛠️',
 		'Debugging Jedi 🧠',
 		'Engineer 🧑‍💻',
 		'Batman 🦇',
 		'Microservices Architect 🚀',
 		'Chief Stack Overflow Officer 💬',
-	];
+	], []);
 
-	const skills = [
-		'C#',
-		'.NET Core',
-		'Java',
-		'Spring Boot',
-		'Node.js',
-		'TypeScript',
-		'Angular',
-		'SQL',
-		'MongoDB'
-	];
-
-	const [displayPosition, setDisplayPosition] = useState('');
+	const [displayPosition, setDisplayPosition] = useState(positions[0]);
 	const [isDeleting, setIsDeleting] = useState(false);
 	const [positionIndex, setPositionIndex] = useState(0);
 	const [typingSpeed, setTypingSpeed] = useState(100);
