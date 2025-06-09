@@ -6,16 +6,15 @@ import { useState, useEffect, useMemo } from 'react';
 export default function HeroSection() {
 	const name = 'Rahul Chaurasiya';
 	const skills = [
-		'Node.js',
-		'TypeScript',
-		'React',
-		'Python',
+		'C#',
+		'.Net Core',
 		'Java',
+		'Spring Boot',
+		'TypeScript',
+		'Node.js',
+		'Angular',
 		'SQL',
-		'MongoDB',
-		'AWS',
-		'Docker',
-		'Git',
+		'MongoDB'
 	];
 
 	const positions = useMemo(() => [
