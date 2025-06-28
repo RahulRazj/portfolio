@@ -1,0 +1,134 @@
+{
+  "commands": [
+    {
+      "name": "help",
+      "aliases": ["?", "h"],
+      "description": "Show available commands",
+      "usage": "help [command]",
+      "output": "Available commands:\n- help: Show this help message\n- clear: Clear terminal\n- whoami: Show current user\n- date: Show current date and time\n- ls: List files\n- pwd: Show current directory\n- about: About me\n- skills: Show my skills\n- projects: Show my projects\n- contact: Show contact information\n- batman: Show Batman quote\n- exit: Return to Gotham"
+    },
+    {
+      "name": "clear",
+      "aliases": ["cls", "c"],
+      "description": "Clear terminal screen",
+      "usage": "clear",
+      "output": "CLEAR_TERMINAL"
+    },
+    {
+      "name": "whoami",
+      "aliases": ["who"],
+      "description": "Show current user",
+      "usage": "whoami",
+      "output": "batman"
+    },
+    {
+      "name": "date",
+      "aliases": ["time"],
+      "description": "Show current date and time",
+      "usage": "date",
+      "output": "DYNAMIC_DATE"
+    },
+    {
+      "name": "ls",
+      "aliases": ["dir", "list"],
+      "description": "List files and directories",
+      "usage": "ls [path]",
+      "output": "batcomputer/\nbatmobile/\nbatcave_security/\ntraining_facility/\nvehicle_hangar/\nsecret_passages/\nportfolio/\nresume.pdf"
+    },
+    {
+      "name": "pwd",
+      "aliases": ["path"],
+      "description": "Show current directory",
+      "usage": "pwd",
+      "output": "/batcave"
+    },
+    {
+      "name": "about",
+      "aliases": ["me", "info"],
+      "description": "Show information about me",
+      "usage": "about",
+      "output": "👨‍💻 Rahul Chaurasiya — Full Stack Developer | Microservices Architect | Debugging Jedi\n\n💡 I bring over 2 years of experience building robust backend services and full-stack systems using C#, Node.js, and .NET Core. I love designing resilient APIs, scalable architectures, and backend flows that just work™.\n\n🔧 I specialize in solving complex data problems, optimizing database performance, and building enterprise-level applications — from data propagation engines to automated testing pipelines.\n\n🧰 Tech I wield:\n  • Languages     → C#, JS/TS, SQL\n  • Frameworks    → .NET, Angular, Node.js\n  • Tools         → Azure ☁️, MongoDB, SQL Server, Git, Docker\n\n📡 Reach me or see my work:\n  • GitHub     👉 github.com/RahulRazj\n  • LinkedIn   👉 linkedin.com/in/RahulRazj\n  • Email      👉 rahulch295@gmail.com\n\n🦇 When I'm not coding, I'm probably fighting crime or debugging production issues in Gotham City!",
+      "links": {
+        "github": {
+          "display": "github.com/RahulRazj",
+          "url": "https://github.com/RahulRazj"
+        },
+        "linkedin": {
+          "display": "linkedin.com/in/RahulRazj",
+          "url": "https://linkedin.com/in/RahulRazj"
+        },
+        "email": {
+          "display": "rahulch295@gmail.com",
+          "url": "mailto:rahulch295@gmail.com"
+        }
+      }
+    },
+    {
+      "name": "skills",
+      "aliases": ["tech", "technologies"],
+      "description": "Show my technical skills",
+      "usage": "skills",
+      "output": "Languages: C#, JavaScript, TypeScript, SQL\nFrameworks: .NET, Node.js, Angular\nDatabases: SQL Server, MongoDB, PostgreSQL\nTools: Git, Docker, Azure, AWS\nDevOps: CI/CD, Kubernetes, Terraform\n\nI specialize in building robust backend systems and optimizing database performance."
+    },
+    {
+      "name": "projects",
+      "aliases": ["work", "portfolio"],
+      "description": "Show my projects",
+      "usage": "projects",
+      "output": "System Watch - Cross-platform resource monitor\n- Built with C# and .NET 9\n- Plugin-based architecture\n- Real-time system monitoring\n\nSQL to Mongo Transfer\n- Full-stack migration tool\n- Angular frontend, Node.js backend\n- Dynamic data mapping\n\nMore projects available at: github.com/RahulRazj",
+      "links": {
+        "github": {
+          "display": "github.com/RahulRazj",
+          "url": "https://github.com/RahulRazj"
+        }
+      }
+    },
+    {
+      "name": "contact",
+      "aliases": ["email", "reach"],
+      "description": "Show contact information",
+      "usage": "contact",
+      "output": "Email: rahulch295@gmail.com\nLinkedIn: linkedin.com/in/rahul-chaurasiya\nGitHub: github.com/RahulRazj\n\nSignal the Bat-Signal for urgent matters!",
+      "links": {
+        "github": {
+          "display": "github.com/RahulRazj",
+          "url": "https://github.com/RahulRazj"
+        },
+        "linkedin": {
+          "display": "linkedin.com/in/RahulRazj",
+          "url": "https://linkedin.com/in/RahulRazj"
+        },
+        "email": {
+          "display": "rahulch295@gmail.com",
+          "url": "mailto:rahulch295@gmail.com"
+        }
+      }
+    },
+    {
+      "name": "batman",
+      "aliases": ["quote", "inspire"],
+      "description": "Show a random Batman quote",
+      "usage": "batman",
+      "output": "DYNAMIC_QUOTE"
+    },
+    {
+      "name": "exit",
+      "aliases": ["quit", "logout"],
+      "description": "Return to main page",
+      "usage": "exit",
+      "output": "REDIRECT_HOME"
+    }
+  ],
+  "batmanQuotes": [
+    "I'm Batman.",
+    "It's not who I am underneath, but what I do that defines me.",
+    "Why do we fall? So we can learn to pick ourselves up.",
+    "The night is darkest just before the dawn.",
+    "I am vengeance, I am the night, I am Batman!",
+    "Sometimes the truth isn't good enough. Sometimes people deserve more.",
+    "If you kill a killer, the number of killers in the world remains the same.",
+    "Justice, like lightning, should ever appear to some men hope, to other men fear.",
+    "Criminals are a superstitious and cowardly lot.",
+    "I wear a mask. And that mask, it's not to hide who I am, but to create what I am."
+  ]
+} 
