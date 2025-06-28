@@ -15,6 +15,23 @@ interface CommandLinks {
 	[key: string]: LinkData;
 }
 
+interface Command {
+	name: string;
+	aliases: string[];
+	description: string;
+	usage: string;
+	output: string;
+	hidden: boolean;
+	links?: CommandLinks;
+}
+
+interface EasterEgg {
+	name: string;
+	output: string;
+	aliases: string[];
+	hidden: boolean;
+}
+
 export default function Batcave() {
 	const [commandHistory, setCommandHistory] = useState<string[]>([]);
 	const [currentCommand, setCurrentCommand] = useState('');
@@ -22,6 +39,7 @@ export default function Batcave() {
 	const [commandIndex, setCommandIndex] = useState(-1);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const terminalRef = useRef<HTMLDivElement>(null);
+	const bottomRef = useRef<HTMLDivElement>(null);
 
 	// Auto-scroll to bottom
 	useEffect(() => {
@@ -34,33 +52,23 @@ export default function Batcave() {
 		}
 	}, [currentCommand]);
 
-	// Focus input and scroll after command execution
+	// Scroll to bottom when output changes
 	useEffect(() => {
-		if (terminalOutput.length > 0) {
-			// Use requestAnimationFrame to ensure DOM is updated
-			requestAnimationFrame(() => {
-				setTimeout(() => {
-					if (inputRef.current) {
-						inputRef.current.focus();
-					}
-					if (terminalRef.current) {
-						// Always scroll to extreme bottom smoothly
-						terminalRef.current.scrollTo({
-							top: terminalRef.current.scrollHeight,
-							behavior: 'smooth'
-						});
-					}
-				}, 100);
-			});
+		if (bottomRef.current) {
+			bottomRef.current.scrollIntoView({ behavior: "smooth" });
 		}
 	}, [terminalOutput]);
 
-	// Ensure scroll to bottom on every render
+	// Focus input after command execution
 	useEffect(() => {
-		if (terminalRef.current) {
-			terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+		if (terminalOutput.length > 0) {
+			setTimeout(() => {
+				if (inputRef.current) {
+					inputRef.current.focus();
+				}
+			}, 100);
 		}
-	});
+	}, [terminalOutput]);
 
 	// Focus input on mount
 	useEffect(() => {
@@ -69,11 +77,24 @@ export default function Batcave() {
 		}
 	}, []);
 
-	const findCommand = (cmd: string) => {
-		const command = cmd.toLowerCase().trim();
-		return terminalCommands.commands.find(cmd => 
+	const findCommand = (inputCmd: string) => {
+		const command = inputCmd.toLowerCase().trim();
+		
+		// First search in regular commands
+		const regularCommand = (terminalCommands.commands as Command[]).find(cmd => 
 			cmd.name === command || cmd.aliases.includes(command)
 		);
+		
+		if (regularCommand) {
+			return regularCommand;
+		}
+		
+		// If not found in regular commands, search in easter eggs
+		const easterEgg = (terminalCommands.b99EasterEggs as EasterEgg[]).find(cmd => 
+			cmd.name === command || cmd.aliases.includes(command)
+		);
+		
+		return easterEgg;
 	};
 
 	const executeCommand = (cmd: string) => {
@@ -95,12 +116,37 @@ export default function Batcave() {
 					output = quotes[Math.floor(Math.random() * quotes.length)];
 					break;
 				case 'exit':
+				case 'gui':
 					window.location.href = '/';
 					return;
+				case 'help':
+					// Dynamically generate help output based on hidden property
+					const visibleCommands = terminalCommands.commands.filter(cmd => !cmd.hidden);
+					
+					// Calculate maximum command name length for padding
+					const maxCommandLength = Math.max(...visibleCommands.map(cmd => cmd.name.length));
+					
+					// Calculate maximum length including aliases for description alignment
+					const maxTotalLength = Math.max(...visibleCommands.map(cmd => {
+						const aliases = cmd.aliases.length > 0 ? ` (${cmd.aliases.join(', ')})` : '';
+						return cmd.name.length + aliases.length;
+					}));
+					
+					const helpLines = visibleCommands.map(cmd => {
+						const aliases = cmd.aliases.length > 0 ? ` (${cmd.aliases.join(', ')})` : '';
+						// Pad the command name to ensure aliases align
+						const paddedName = cmd.name.padEnd(maxCommandLength + 2);
+						// Pad the command + aliases to ensure descriptions align
+						const commandWithAliases = paddedName + aliases;
+						const paddedCommand = commandWithAliases.padEnd(maxTotalLength + 4);
+						return `- ${paddedCommand}: ${cmd.description}`;
+					});
+					output = `Available commands:\n${helpLines.join('\n')}`;
+					break;
 				default:
 					output = command.output;
 					// Replace display links with clickable links if links exist
-					if (command.links) {
+					if ('links' in command && command.links) {
 						Object.entries(command.links as CommandLinks).forEach(([, linkData]) => {
 							const displayText = linkData.display;
 							const url = linkData.url;
@@ -148,9 +194,12 @@ export default function Batcave() {
 	};
 
 	return (
-		<main className="min-h-screen bg-[#1A1A1A] text-white p-4 font-mono relative">
+		<main 
+			className="min-h-screen bg-[#1A1A1A] text-white p-4 font-mono relative cursor-text"
+			onClick={() => inputRef.current?.focus()}
+		>
 			{/* Back Button - Fixed Position */}
-			<div className="absolute top-4 left-8 group">
+			<div className="fixed top-4 left-8 group z-50">
 				<div className="absolute top-full left-0 mt-2 w-48 text-white/80 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
 					Return to Gotham City... The night calls
 				</div>
@@ -223,10 +272,13 @@ export default function Batcave() {
 							</div>
 						))}
 
+						{/* Scroll Anchor */}
+						<div ref={bottomRef} />
+
 						{/* Command Input */}
 						<form onSubmit={handleSubmit} className="flex items-center py-2 cursor-text" onClick={() => inputRef.current?.focus()}>
 							<div className="flex items-center text-base">
-								<span className="text-green-400 font-semibold">dev@rahul</span>
+								<span className="text-green-400 font-semibold hover:drop-shadow-[0_0_8px_rgba(34,197,94,0.8)] transition-all duration-300">dev@rahul</span>
 								<span className="text-white/60 mx-1">:</span>
 								<span className="text-blue-400 font-semibold drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]">~</span>
 								<span className="text-white/60 mx-1">$</span>
@@ -240,7 +292,6 @@ export default function Batcave() {
 								className="flex-1 bg-transparent text-white outline-none border-none ml-2 text-base py-1"
 								autoComplete="off"
 							/>
-							{/* <span className={`w-2 h-6 bg-white ml-1 ${cursorVisible ? 'opacity-100' : 'opacity-0'}`}></span> */}
 						</form>
 					</div>
 				</motion.div>
