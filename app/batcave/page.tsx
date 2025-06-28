@@ -6,22 +6,22 @@ import { GiBatMask } from 'react-icons/gi';
 import { useState, useEffect, useRef } from 'react';
 import terminalCommands from '../../data/terminal-commands.json';
 
+interface LinkData {
+	display: string;
+	url: string;
+}
+
+interface CommandLinks {
+	[key: string]: LinkData;
+}
+
 export default function Batcave() {
 	const [commandHistory, setCommandHistory] = useState<string[]>([]);
 	const [currentCommand, setCurrentCommand] = useState('');
 	const [terminalOutput, setTerminalOutput] = useState<string[]>([]);
-	const [cursorVisible, setCursorVisible] = useState(true);
 	const [commandIndex, setCommandIndex] = useState(-1);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const terminalRef = useRef<HTMLDivElement>(null);
-
-	// Cursor blink effect
-	useEffect(() => {
-		const interval = setInterval(() => {
-			setCursorVisible(prev => !prev);
-		}, 500);
-		return () => clearInterval(interval);
-	}, []);
 
 	// Auto-scroll to bottom
 	useEffect(() => {
@@ -42,8 +42,13 @@ export default function Batcave() {
 				setTimeout(() => {
 					if (inputRef.current) {
 						inputRef.current.focus();
-						// Scroll the input into view
-						inputRef.current.scrollIntoView({ behavior: 'auto', block: 'end' });
+					}
+					if (terminalRef.current) {
+						// Always scroll to extreme bottom smoothly
+						terminalRef.current.scrollTo({
+							top: terminalRef.current.scrollHeight,
+							behavior: 'smooth'
+						});
 					}
 				}, 100);
 			});
@@ -96,7 +101,7 @@ export default function Batcave() {
 					output = command.output;
 					// Replace display links with clickable links if links exist
 					if (command.links) {
-						Object.entries(command.links).forEach(([key, linkData]: [string, any]) => {
+						Object.entries(command.links as CommandLinks).forEach(([, linkData]) => {
 							const displayText = linkData.display;
 							const url = linkData.url;
 							output = output.replace(
@@ -189,7 +194,7 @@ export default function Batcave() {
 							Welcome to my portfolio CLI! 👋
 						</p>
 						<p className="text-white/70 text-base mb-6">
-							Type "help" or "h" or "?" to see available commands.
+							Type &quot;help&quot; or &quot;h&quot; or &quot;?&quot; to see available commands.
 						</p>
 					</motion.div>
 				</motion.div>
