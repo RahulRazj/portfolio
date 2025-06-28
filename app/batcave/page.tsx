@@ -25,6 +25,13 @@ interface Command {
 	links?: CommandLinks;
 }
 
+interface EasterEgg {
+	name: string;
+	output: string;
+	aliases: string[];
+	hidden: boolean;
+}
+
 export default function Batcave() {
 	const [commandHistory, setCommandHistory] = useState<string[]>([]);
 	const [currentCommand, setCurrentCommand] = useState('');
@@ -83,7 +90,7 @@ export default function Batcave() {
 		}
 		
 		// If not found in regular commands, search in easter eggs
-		const easterEgg = (terminalCommands.b99EasterEggs as any[]).find(cmd => 
+		const easterEgg = (terminalCommands.b99EasterEggs as EasterEgg[]).find(cmd => 
 			cmd.name === command || cmd.aliases.includes(command)
 		);
 		
@@ -139,7 +146,7 @@ export default function Batcave() {
 				default:
 					output = command.output;
 					// Replace display links with clickable links if links exist
-					if (command.links) {
+					if ('links' in command && command.links) {
 						Object.entries(command.links as CommandLinks).forEach(([, linkData]) => {
 							const displayText = linkData.display;
 							const url = linkData.url;
