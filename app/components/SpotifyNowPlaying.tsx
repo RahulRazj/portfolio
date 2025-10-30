@@ -94,8 +94,10 @@ export default function SpotifyNowPlaying() {
   useEffect(() => {
     fetchCurrentlyPlaying();
 
-    // Poll every 20 seconds for updates
-    const interval = setInterval(fetchCurrentlyPlaying, 5000);
+    // Poll for updates - interval controlled by environment variable
+    const pollInterval = Number.parseInt(process.env.PUBLIC_SPOTIFY_POLL_INTERVAL || '5000', 10);
+    const interval = setInterval(fetchCurrentlyPlaying, pollInterval);
+
     return () => clearInterval(interval);
   }, []);
 
