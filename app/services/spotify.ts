@@ -15,7 +15,7 @@ export interface CurrentlyPlayingResponse {
 
 export interface TopTracksResponse {
   tracks: Array<{
-    name: string;
+    title: string;
     artist: string;
     album: string;
     image?: string;
@@ -59,8 +59,6 @@ export async function getCurrentlyPlaying(): Promise<CurrentlyPlayingResponse> {
       };
     }
 
-    console.log('Fetched currently playing data:', data);
-    
     return {
       isPlaying: true,
       track: {
@@ -81,9 +79,15 @@ export async function getCurrentlyPlaying(): Promise<CurrentlyPlayingResponse> {
 }
 
 // Fetch top tracks
-export async function getTopTracks(timeRange: 'short_term' | 'medium_term' | 'long_term' = 'medium_term'): Promise<TopTracksResponse> {
+export async function getTopTracks(options?: { 
+  timeRange?: 'short_term' | 'medium_term' | 'long_term';
+  limit?: number;
+}): Promise<TopTracksResponse> {
   try {
-    const response = await fetch(`${BASE_API_URL}/top-tracks?time_range=${timeRange}`);
+    const timeRange = options?.timeRange || 'medium_term';
+    const limit = options?.limit || 5;
+    
+    const response = await fetch(`${BASE_API_URL}/top-tracks?time_range=${timeRange}&limit=${limit}`);
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -111,9 +115,15 @@ export async function getTopTracks(timeRange: 'short_term' | 'medium_term' | 'lo
 }
 
 // Fetch top artists
-export async function getTopArtists(timeRange: 'short_term' | 'medium_term' | 'long_term' = 'medium_term'): Promise<TopArtistsResponse> {
+export async function getTopArtists(options?: { 
+  timeRange?: 'short_term' | 'medium_term' | 'long_term';
+  limit?: number;
+}): Promise<TopArtistsResponse> {
   try {
-    const response = await fetch(`${BASE_API_URL}/top-artists?time_range=${timeRange}`);
+    const timeRange = options?.timeRange || 'medium_term';
+    const limit = options?.limit || 10;
+    
+    const response = await fetch(`${BASE_API_URL}/top-artists?time_range=${timeRange}&limit=${limit}`);
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

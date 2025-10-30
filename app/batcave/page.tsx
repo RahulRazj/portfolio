@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { GiBatMask } from 'react-icons/gi';
 import { useState, useEffect, useRef } from 'react';
 import terminalCommands from '../../data/terminal-commands.json';
+import { getCurrentlyPlaying, getTopTracks, getTopArtists } from '../services/spotify';
 
 interface LinkData {
 	display: string;
@@ -97,8 +98,13 @@ export default function Batcave() {
 		return easterEgg;
 	};
 
-	const executeCommand = (cmd: string) => {
-		const command = findCommand(cmd);
+	const executeCommand = async (cmd: string) => {
+		// Parse command and arguments
+		const cmdParts = cmd.toLowerCase().trim().split(' ');
+		const baseCommand = cmdParts.slice(0, 2).join(' '); // For "spot tt" style commands
+		const args = cmdParts.slice(2); // Additional arguments
+		
+		const command = findCommand(baseCommand) || findCommand(cmd);
 		let output = '';
 
 		if (!command) {
@@ -111,15 +117,129 @@ export default function Batcave() {
 				case 'date':
 					output = new Date().toLocaleString();
 					break;
-				case 'batman':
+				case 'batman': {
 					const quotes = terminalCommands.batmanQuotes;
 					output = quotes[Math.floor(Math.random() * quotes.length)];
 					break;
+				}
 				case 'exit':
 				case 'gui':
-					window.location.href = '/';
+					globalThis.location.href = '/';
 					return;
-				case 'help':
+				case 'spot currently-playing':
+				case 'spot cp':
+				case 'spot now': {
+					try {
+						const data = await getCurrentlyPlaying();
+						if (data.error || !data.isPlaying || !data.track) {
+							output = '🎵 Batman is out saving Gotham... No time for music right now 🦇';
+						} else {
+							output = `🎵 Currently Playing:\n\n🎵 Title: ${data.track.title}\n👤 Artist: ${data.track.artist}\n💿 Album: ${data.track.album}`;
+						}
+					} catch (error) {
+						output = '🎵 Failed to fetch currently playing track';
+						console.log('Error fetching currently playing track:', error);
+					}
+					break;
+				}
+				case 'spot top-tracks':
+				case 'spot tt':
+				case 'spot tracks': {
+					try {
+						// Parse parameters for top tracks: limit and time range
+						let limit = 5;
+						let timeRange = 'medium_term';
+						
+						// Check for limit parameter (number)
+						if (args.length > 0 && !Number.isNaN(Number(args[0]))) {
+							limit = Math.min(50, Math.max(1, Number(args[0])));
+						}
+						
+						// Check for time range parameter
+						const timeRangeMap: { [key: string]: string } = {
+							'short': 'short_term',
+							'medium': 'medium_term',
+							'long': 'long_term'
+						};
+						
+						for (const arg of args) {
+							if (timeRangeMap[arg]) {
+								timeRange = timeRangeMap[arg];
+								break;
+							}
+						}
+						
+						const data = await getTopTracks({ 
+							timeRange: timeRange as 'short_term' | 'medium_term' | 'long_term',
+							limit
+						});
+						if (data.error || data.tracks.length === 0) {
+							output = '🎵 No top tracks data available';
+						} else {
+							const trackList = data.tracks.map((track, index) => 
+								`${(index + 1).toString().padStart(2, ' ')}. ${track.title} - ${track.artist}`
+							).join('\n');
+							output = `🎵 Your Top Tracks:\n\n${trackList}`;
+						}
+					} catch {
+						output = '🎵 Failed to fetch top tracks';
+					}
+					break;
+				}
+				case 'spot top-artists':
+				case 'spot ta':
+				case 'spot artists': {
+					try {
+						// Parse parameters for top artists: limit and time range
+						let limit = 10;
+						let timeRange = 'medium_term';
+						
+						// Check for limit parameter (number)
+						if (args.length > 0 && !Number.isNaN(Number(args[0]))) {
+							limit = Math.min(50, Math.max(1, Number(args[0])));
+						}
+						
+						// Check for time range parameter
+						const timeRangeMap: { [key: string]: string } = {
+							'short': 'short_term',
+							'medium': 'medium_term',
+							'long': 'long_term'
+						};
+						
+						for (const arg of args) {
+							if (timeRangeMap[arg]) {
+								timeRange = timeRangeMap[arg];
+								break;
+							}
+						}
+						
+						const data = await getTopArtists({ 
+							timeRange: timeRange as 'short_term' | 'medium_term' | 'long_term',
+							limit
+						});
+						if (data.error) {
+							output = `🎵 Spotify Error: ${data.error}`;
+						} else if (data.artists.length === 0) {
+							output = '🎵 No top artists data available';
+						} else {
+							const timeRangeDisplay = (() => {
+								switch (timeRange) {
+									case 'short_term': return 'Short Term';
+									case 'long_term': return 'Long Term';
+									default: return 'Medium Term';
+								}
+							})();
+							const artistList = data.artists.map((artist, index) => 
+								`${(index + 1).toString().padStart(2, ' ')}. ${artist.name}`
+							).join('\n');
+							output = `🎵 Your Top Artists (${timeRangeDisplay}):\n\n${artistList}`;
+						}
+					} catch {
+						output = '🎵 Failed to fetch top artists';
+					}
+					break;
+				}
+				case 'help': {
 					// Dynamically generate help output based on hidden property
 					const visibleCommands = terminalCommands.commands.filter(cmd => !cmd.hidden);
 					
@@ -143,18 +263,19 @@ export default function Batcave() {
 					});
 					output = `Available commands:\n${helpLines.join('\n')}`;
 					break;
+				}
 				default:
 					output = command.output;
 					// Replace display links with clickable links if links exist
 					if ('links' in command && command.links) {
-						Object.entries(command.links as CommandLinks).forEach(([, linkData]) => {
+						for (const [, linkData] of Object.entries(command.links as CommandLinks)) {
 							const displayText = linkData.display;
 							const url = linkData.url;
 							output = output.replace(
 								displayText, 
 								`<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #60a5fa; text-decoration: underline; cursor: pointer;" onmouseover="this.style.color='#93c5fd'" onmouseout="this.style.color='#60a5fa'">${displayText}</a>`
 							);
-						});
+						}
 					}
 			}
 		}
@@ -163,10 +284,10 @@ export default function Batcave() {
 		setCommandHistory(prev => [...prev, cmd]);
 	};
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (currentCommand.trim()) {
-			executeCommand(currentCommand);
+			await executeCommand(currentCommand);
 			setCurrentCommand('');
 			setCommandIndex(-1);
 		}
