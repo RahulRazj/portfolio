@@ -74,7 +74,9 @@ export default function SpotifyNowPlaying() {
   const [currentTrack, setCurrentTrack] = useState<CurrentlyPlayingResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showMobileTooltip, setShowMobileTooltip] = useState(false);
+  const [showDesktopHover, setShowDesktopHover] = useState(false);
   const tooltipRef = useRef<HTMLDivElement>(null);
+  const hoverRef = useRef<HTMLDivElement>(null);
 
   const fetchCurrentlyPlaying = async () => {
     try {
@@ -153,12 +155,15 @@ export default function SpotifyNowPlaying() {
   }
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/mouse-events-have-key-events
     <div 
-      className={`bg-black/60 backdrop-blur-lg rounded-lg border transition-all duration-300 p-3 w-full min-w-[280px] md:min-w-[280px] min-w-[48px] md:w-full w-12 ${
+      className={`bg-black/60 backdrop-blur-lg rounded-lg border transition-all duration-300 p-3 w-full min-w-[280px] md:min-w-[280px] min-w-[48px] md:w-full w-12 relative ${
         currentTrack?.isPlaying 
           ? 'border-green-500/50' 
           : 'border-gray-700'
       }`}
+      onMouseEnter={() => setShowDesktopHover(true)}
+      onMouseLeave={() => setShowDesktopHover(false)}
     >
         {/* Desktop view - full layout */}
         <div className="items-center gap-3 md:flex hidden">
@@ -314,6 +319,72 @@ export default function SpotifyNowPlaying() {
             </div>
           )}
         </div>
+
+        {/* Desktop Hover Popup */}
+        {showDesktopHover && (
+          <div 
+            ref={hoverRef}
+            className="absolute top-1/2 left-full transform -translate-y-1/2 ml-2 bg-black/95 backdrop-blur-lg rounded-lg border border-gray-700 p-4 w-64 z-50 hidden md:block"
+          >
+            {/* Album Art */}
+            {currentTrack?.track?.image && (
+              <div className="w-full aspect-square rounded-lg overflow-hidden bg-gray-800 mb-4">
+                <Image 
+                  src={currentTrack.track.image} 
+                  alt={`${currentTrack.track.album} album cover`}
+                  width={240}
+                  height={240}
+                  className="w-full h-full object-cover"
+                  unoptimized={true}
+                />
+              </div>
+            )}
+            
+            {/* Track Information */}
+            <div className="text-center space-y-2">
+              <div className={`text-lg font-bold ${
+                currentTrack?.isPlaying ? 'text-white' : 'text-gray-400'
+              }`}>
+                {currentTrack?.error ? 'Spotify Error' : currentTrack?.track?.title || 'Offline'}
+              </div>
+              
+              {currentTrack?.track?.artist && (
+                <div className="text-gray-300 text-base">
+                  {currentTrack.track.artist}
+                </div>
+              )}
+              
+              {currentTrack?.track?.album && (
+                <div className="text-gray-400 text-sm">
+                  {currentTrack.track.album}
+                </div>
+              )}
+              
+              {!currentTrack?.isPlaying && !currentTrack?.error && (
+                <div className="text-gray-500 text-sm">
+                  Not playing
+                </div>
+              )}
+              
+              {currentTrack?.error && (
+                <div className="text-red-400 text-sm">
+                  {currentTrack.error}
+                </div>
+              )}
+              
+              {/* Playing indicator */}
+              {currentTrack?.isPlaying && (
+                <div className="flex items-center justify-center gap-1 mt-3">
+                  <div className="w-1 h-3 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '0ms' }}></div>
+                  <div className="w-1 h-4 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '75ms' }}></div>
+                  <div className="w-1 h-5 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '150ms' }}></div>
+                  <div className="w-1 h-4 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '225ms' }}></div>
+                  <div className="w-1 h-3 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '300ms' }}></div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
   );
 }
