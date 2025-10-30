@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useState, useEffect, useMemo } from 'react';
+import SpotifyNowPlaying from './SpotifyNowPlaying';
 
 export default function HeroSection() {
 	const name = 'Rahul Chaurasiya';
@@ -105,8 +106,13 @@ export default function HeroSection() {
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.8 }}
-					className="bg-black/50 backdrop-blur-lg rounded-lg border border-gray-800 p-6"
+					className="bg-black/50 backdrop-blur-lg rounded-lg border border-gray-800 p-6 relative"
 				>
+					{/* Spotify Now Playing - Inside hero section */}
+					<div className="absolute top-4 right-4 z-10">
+						<SpotifyNowPlaying />
+					</div>
+					
 					<div className="flex items-center gap-2 mb-4">
 						<div className="w-3 h-3 rounded-full bg-red-500" />
 						<div className="w-3 h-3 rounded-full bg-yellow-500" />

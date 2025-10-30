@@ -5,3 +5,19 @@
 body {
 	background-color: #1a1a1a;
 }
+
+/* Left to right scrolling text animation for Spotify titles */
+@keyframes scroll-text {
+  0% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(0);
+  }
+  85% {
+    transform: translateX(var(--translate-distance, -60px));
+  }
+  100% {
+    transform: translateX(var(--translate-distance, -60px));
+  }
+}
