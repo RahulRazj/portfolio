@@ -73,6 +73,8 @@ function ScrollingText({ text, className, maxWidth = 140 }: {
 export default function SpotifyNowPlaying() {
   const [currentTrack, setCurrentTrack] = useState<CurrentlyPlayingResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showMobileTooltip, setShowMobileTooltip] = useState(false);
+  const tooltipRef = useRef<HTMLDivElement>(null);
 
   const fetchCurrentlyPlaying = async () => {
     try {
@@ -92,21 +94,55 @@ export default function SpotifyNowPlaying() {
   useEffect(() => {
     fetchCurrentlyPlaying();
 
-    // Poll every 20 seconds for updates
-    const interval = setInterval(fetchCurrentlyPlaying, 5000);
+    // Poll for updates - interval controlled by environment variable
+    const pollInterval = Number.parseInt(process.env.NEXT_PUBLIC_SPOTIFY_POLL_INTERVAL || '5000', 10);
+    const interval = setInterval(fetchCurrentlyPlaying, pollInterval);
+    
     return () => clearInterval(interval);
   }, []);
 
+  // Close tooltip when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (tooltipRef.current && !tooltipRef.current.contains(event.target as Node)) {
+        setShowMobileTooltip(false);
+      }
+    };
+
+    if (showMobileTooltip) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showMobileTooltip]);
+
+  // Auto-close tooltip after 2 seconds
+  useEffect(() => {
+    if (showMobileTooltip) {
+      const timer = setTimeout(() => {
+        setShowMobileTooltip(false);
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showMobileTooltip]);
+
   if (isLoading) {
     return (
-      <div className="bg-black/60 backdrop-blur-lg rounded-lg border border-gray-700 p-3 w-full min-w-[280px]">
-        <div className="flex items-center gap-3">
+      <div className="bg-black/60 backdrop-blur-lg rounded-lg border border-gray-700 p-3 w-full min-w-[280px] md:min-w-[280px] min-w-[48px] md:w-full w-12">
+        <div className="flex items-center gap-3 md:flex hidden">
           <FaSpotify className="w-6 h-6 text-green-500 animate-pulse" />
           <div className="w-8 h-8 rounded-md bg-gray-700 animate-pulse flex-shrink-0"></div>
           <div className="flex-1 min-w-0">
             <div className="h-4 bg-gray-600 rounded animate-pulse mb-2"></div>
             <div className="h-3 bg-gray-700 rounded animate-pulse w-2/3"></div>
           </div>
+        </div>
+        {/* Mobile view - just icon */}
+        <div className="md:hidden flex items-center justify-center">
+          <FaSpotify className="w-6 h-6 text-green-500 animate-pulse" />
         </div>
       </div>
     );
@@ -118,13 +154,14 @@ export default function SpotifyNowPlaying() {
 
   return (
     <div 
-      className={`bg-black/60 backdrop-blur-lg rounded-lg border transition-all duration-300 p-3 w-full min-w-[280px] ${
+      className={`bg-black/60 backdrop-blur-lg rounded-lg border transition-all duration-300 p-3 w-full min-w-[280px] md:min-w-[280px] min-w-[48px] md:w-full w-12 ${
         currentTrack?.isPlaying 
           ? 'border-green-500/50' 
           : 'border-gray-700'
       }`}
     >
-        <div className="flex items-center gap-3">
+        {/* Desktop view - full layout */}
+        <div className="items-center gap-3 md:flex hidden">
           <div className="relative">
             <FaSpotify 
               className={`w-5 h-5 transition-colors duration-300 ${
@@ -189,6 +226,91 @@ export default function SpotifyNowPlaying() {
               <div className="w-1 h-3 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '0ms' }}></div>
               <div className="w-1 h-4 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '150ms' }}></div>
               <div className="w-1 h-3 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '300ms' }}></div>
+            </div>
+          )}
+        </div>
+
+        {/* Mobile view - just icon with click tooltip */}
+        <div className="md:hidden relative">
+          <button 
+            className="flex items-center justify-center cursor-pointer bg-transparent border-none p-0 w-full h-full"
+            onClick={() => setShowMobileTooltip(!showMobileTooltip)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setShowMobileTooltip(!showMobileTooltip);
+              }
+            }}
+            aria-label="Show current playing song details"
+          >
+            <div className="relative">
+              <FaSpotify 
+                className={`w-6 h-6 transition-colors duration-300 ${
+                  currentTrack?.isPlaying ? 'text-green-500' : 'text-gray-500'
+                }`} 
+              />
+              {currentTrack?.isPlaying && (
+                <div className="absolute -inset-1">
+                  <div className="w-8 h-8 border-2 border-green-500/30 rounded-full animate-ping"></div>
+                </div>
+              )}
+            </div>
+          </button>
+          
+          {/* Mobile Tooltip */}
+          {showMobileTooltip && (
+            <div 
+              ref={tooltipRef}
+              className="absolute top-full right-0 mt-2 bg-black/90 backdrop-blur-lg rounded-lg border border-gray-700 p-3 min-w-[250px] z-50"
+            >
+              <div className="flex items-center gap-3">
+                {currentTrack?.isPlaying && currentTrack?.track?.image && (
+                  <div className="w-10 h-10 rounded-md overflow-hidden bg-gray-800 flex-shrink-0">
+                    <Image 
+                      src={currentTrack.track.image} 
+                      alt={`${currentTrack.track.album} album cover`}
+                      width={40}
+                      height={40}
+                      className="w-full h-full object-cover"
+                      unoptimized={true}
+                    />
+                  </div>
+                )}
+                
+                <div className="flex-1 min-w-0">
+                  <div className={`text-sm font-medium mb-1 ${
+                    currentTrack?.isPlaying ? 'text-white' : 'text-gray-400'
+                  }`}>
+                    {currentTrack?.error ? 'Spotify Error' : currentTrack?.track?.title || 'Offline'}
+                  </div>
+                  
+                  {currentTrack?.track?.artist && (
+                    <div className="text-xs text-gray-400 truncate">
+                      {currentTrack.track.artist}
+                    </div>
+                  )}
+                  
+                  {!currentTrack?.isPlaying && !currentTrack?.error && (
+                    <div className="text-xs text-gray-500">
+                      Not playing
+                    </div>
+                  )}
+                  
+                  {currentTrack?.error && (
+                    <div className="text-xs text-red-400">
+                      {currentTrack.error}
+                    </div>
+                  )}
+                </div>
+                
+                {currentTrack?.isPlaying && (
+                  <div className="flex items-center gap-1">
+                    <div className="w-1 h-2 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '0ms' }}></div>
+                    <div className="w-1 h-3 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '150ms' }}></div>
+                    <div className="w-1 h-2 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '300ms' }}></div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
