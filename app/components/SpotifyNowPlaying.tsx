@@ -99,7 +99,7 @@ export default function SpotifyNowPlaying() {
 
   if (isLoading) {
     return (
-      <div className="bg-black/60 backdrop-blur-lg rounded-lg border border-gray-700 p-3 w-full">
+      <div className="bg-black/60 backdrop-blur-lg rounded-lg border border-gray-700 p-3 w-full min-w-[280px]">
         <div className="flex items-center gap-3">
           <FaSpotify className="w-6 h-6 text-green-500 animate-pulse" />
           <div className="w-8 h-8 rounded-md bg-gray-700 animate-pulse flex-shrink-0"></div>
@@ -118,7 +118,7 @@ export default function SpotifyNowPlaying() {
 
   return (
     <div 
-      className={`bg-black/60 backdrop-blur-lg rounded-lg border transition-all duration-300 p-3 w-full ${
+      className={`bg-black/60 backdrop-blur-lg rounded-lg border transition-all duration-300 p-3 w-full min-w-[280px] ${
         currentTrack?.isPlaying 
           ? 'border-green-500/50' 
           : 'border-gray-700'
@@ -138,8 +138,8 @@ export default function SpotifyNowPlaying() {
             )}
           </div>
           
-          {/* Album artwork */}
-          {currentTrack?.track?.image && (
+          {/* Album artwork - only show when playing */}
+          {currentTrack?.isPlaying && currentTrack?.track?.image && (
             <div className="w-8 h-8 rounded-md overflow-hidden bg-gray-800 flex-shrink-0">
               <Image 
                 src={currentTrack.track.image} 
