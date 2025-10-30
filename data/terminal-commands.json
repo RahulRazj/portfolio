@@ -201,7 +201,7 @@
             ],
             "description": "Spotify integration commands",
             "usage": "spot [command]",
-            "output": "🎵 Spotify Commands - Batman's Playlist Manager\n\nUsage: spot <command> [options]\n\nAvailable commands:\n  currently-playing (cp, now)    Show currently playing track\n  top-tracks (tt, tracks)        Show top tracks [limit] [timerange]\n  top-artists (ta, artists)      Show top artists [limit] [timerange]\n  help (h, ?)                    Show this help\n\nParameters:\n  limit       Number of items to show (1-50, default: 10)\n  timerange   short, medium, long (default: medium)\n\nExamples:\n  spot currently-playing\n  spot tt 20                     # Show 20 top tracks\n  spot tt 15 short               # Show 15 tracks (short term)\n  spot ta 10 long                # Show 10 artists (long term)\n",
+            "output": "🎵 Spotify Commands - Batman's Playlist Manager\n\nUsage: spot <command> [options]\n\nAvailable commands:\n  currently-playing (cp, now)    Show currently playing track\n  top-tracks (tt, tracks)        Show top tracks [limit] [timerange]\n  top-artists (ta, artists)      Show top artists [limit] [timerange]\n  help (h, ?)                    Show this help\n\nExamples:\n  spot currently-playing\n  spot tt 20                     # Show 20 top tracks\n  spot tt 15 short               # Show 15 tracks (short term)\n  spot ta 10 long                # Show 10 artists (long term)\n",
             "hidden": false
         },
         {
@@ -212,7 +212,7 @@
             ],
             "description": "Show Spotify commands help",
             "usage": "spot help",
-            "output": "🎵 Spotify Commands - Batman's Playlist Manager\n\nUsage: spot <command> [options]\n\nAvailable commands:\n  currently-playing (cp, now)    Show currently playing track\n  top-tracks (tt, tracks)        Show top tracks [limit] [timerange]\n  top-artists (ta, artists)      Show top artists [limit] [timerange]\n  help (h, ?)                    Show this help\n\nParameters:\n  limit       Number of items to show (1-50, default: 10)\n  timerange   short, medium, long (default: medium)\n\nExamples:\n  spot currently-playing\n  spot tt 20                     # Show 20 top tracks\n  spot tt 15 short               # Show 15 tracks (short term)\n  spot ta 10 long                # Show 10 artists (long term)\n",
+            "output": "🎵 Spotify Commands - Batman's Playlist Manager\n\nUsage: spot <command> [options]\n\nAvailable commands:\n  currently-playing (cp, now)    Show currently playing track\n  top-tracks (tt, tracks)        Show top tracks [limit] [timerange]\n  top-artists (ta, artists)      Show top artists [limit] [timerange]\n  help (h, ?)                    Show this help\n\nExamples:\n  spot currently-playing\n  spot tt 20                     # Show 20 top tracks\n  spot tt 15 short               # Show 15 tracks (short term)\n  spot ta 10 long                # Show 10 artists (long term)\n",
             "hidden": false
         },
         {
