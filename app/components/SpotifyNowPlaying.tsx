@@ -321,7 +321,7 @@ export default function SpotifyNowPlaying() {
         </div>
 
         {/* Desktop Hover Popup */}
-        {showDesktopHover && (
+        {showDesktopHover && currentTrack?.track && (
           <div 
             ref={hoverRef}
             className="absolute top-1/2 left-full transform -translate-y-1/2 ml-2 bg-black/95 backdrop-blur-lg rounded-lg border border-gray-700 p-4 w-64 z-50 hidden md:block"
@@ -362,7 +362,7 @@ export default function SpotifyNowPlaying() {
               
               {!currentTrack?.isPlaying && !currentTrack?.error && (
                 <div className="text-gray-500 text-sm">
-                  Not playing
+                  Not listening
                 </div>
               )}
               
