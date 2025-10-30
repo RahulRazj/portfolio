@@ -8,7 +8,7 @@
             ],
             "description": "Show available commands",
             "usage": "help [command]",
-            "output": "Available commands:\n- help (h, ?): Show this help message\n- clear (cls, c): Clear terminal\n- whoami (who): Show current user\n- date (time): Show current date and time\n- ls (dir, list): List files\n- pwd (path): Show current directory\n- about (me, info): About me\n- skills (tech, technologies): Show my skills\n- projects (work, portfolio): Show my projects\n- contact (email, reach): Show contact information\n- batman (quote, inspire): Show Batman quote\n- exit (quit, logout): Return to Gotham",
+            "output": "Available commands:\n- help (h, ?): Show this help message\n- clear (cls, c): Clear terminal\n- whoami (who): Show current user\n- date (time): Show current date and time\n- ls (dir, list): List files\n- pwd (path): Show current directory\n- about (me, info): About me\n- skills (tech, technologies): Show my skills\n- projects (work, portfolio): Show my projects\n- contact (email, reach): Show contact information\n- spot: Spotify integration commands\n- batman (quote, inspire): Show Batman quote\n- exit (quit, logout): Return to Gotham",
             "hidden": false
         },
         {
@@ -193,6 +193,60 @@
             "output": "You merely adopted the night... I was born in it. I am the Batman.",
             "aliases": [],
             "hidden": true
+        },
+        {
+            "name": "spot",
+            "aliases": [
+                "spotify"
+            ],
+            "description": "Spotify integration commands",
+            "usage": "spot [command]",
+            "output": "🎵 Spotify Commands - Batman's Playlist Manager\n\nUsage: spot <command> [options]\n\nAvailable commands:\n  currently-playing (cp, now)    Show currently playing track\n  top-tracks (tt, tracks)        Show top tracks [limit] [timerange]\n  top-artists (ta, artists)      Show top artists [limit] [timerange]\n  help (h, ?)                    Show this help\n\nExamples:\n  spot currently-playing\n  spot tt 20                     # Show 20 top tracks\n  spot tt 15 short               # Show 15 tracks (short term)\n  spot ta 10 long                # Show 10 artists (long term)\n",
+            "hidden": false
+        },
+        {
+            "name": "spot help",
+            "aliases": [
+                "spot h",
+                "spot ?"
+            ],
+            "description": "Show Spotify commands help",
+            "usage": "spot help",
+            "output": "🎵 Spotify Commands - Batman's Playlist Manager\n\nUsage: spot <command> [options]\n\nAvailable commands:\n  currently-playing (cp, now)    Show currently playing track\n  top-tracks (tt, tracks)        Show top tracks [limit] [timerange]\n  top-artists (ta, artists)      Show top artists [limit] [timerange]\n  help (h, ?)                    Show this help\n\nExamples:\n  spot currently-playing\n  spot tt 20                     # Show 20 top tracks\n  spot tt 15 short               # Show 15 tracks (short term)\n  spot ta 10 long                # Show 10 artists (long term)\n",
+            "hidden": false
+        },
+        {
+            "name": "spot currently-playing",
+            "aliases": [
+                "spot cp",
+                "spot now"
+            ],
+            "description": "Show currently playing track",
+            "usage": "spot currently-playing",
+            "output": "SPOTIFY_CURRENTLY_PLAYING",
+            "hidden": false
+        },
+        {
+            "name": "spot top-tracks",
+            "aliases": [
+                "spot tt",
+                "spot tracks"
+            ],
+            "description": "Show top tracks",
+            "usage": "spot top-tracks",
+            "output": "SPOTIFY_TOP_TRACKS",
+            "hidden": false
+        },
+        {
+            "name": "spot top-artists",
+            "aliases": [
+                "spot ta",
+                "spot artists"
+            ],
+            "description": "Show top artists",
+            "usage": "spot top-artists",
+            "output": "SPOTIFY_TOP_ARTISTS",
+            "hidden": false
         }
     ],
     "batmanQuotes": [
