@@ -95,9 +95,9 @@ export default function SpotifyNowPlaying() {
     fetchCurrentlyPlaying();
 
     // Poll for updates - interval controlled by environment variable
-    const pollInterval = Number.parseInt(process.env.PUBLIC_SPOTIFY_POLL_INTERVAL || '5000', 10);
+    const pollInterval = Number.parseInt(process.env.NEXT_PUBLIC_SPOTIFY_POLL_INTERVAL || '5000', 10);
     const interval = setInterval(fetchCurrentlyPlaying, pollInterval);
-
+    
     return () => clearInterval(interval);
   }, []);
 
