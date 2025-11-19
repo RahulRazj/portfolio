@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const response = await fetch('https://spot-api-theta.vercel.app/api/currently-playing.js');
+    const baseUrl = process.env.SPOTIFY_API_BASE_URL || 'https://spot-api-theta.vercel.app';
+    const response = await fetch(`${baseUrl}/api/currently-playing.js`);
     
     if (!response.ok) {
       return NextResponse.json(
