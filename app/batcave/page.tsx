@@ -222,17 +222,10 @@ export default function Batcave() {
 						} else if (data.artists.length === 0) {
 							output = '🎵 No top artists data available';
 						} else {
-							const timeRangeDisplay = (() => {
-								switch (timeRange) {
-									case 'short_term': return 'Short Term';
-									case 'long_term': return 'Long Term';
-									default: return 'Medium Term';
-								}
-							})();
 							const artistList = data.artists.map((artist, index) => 
 								`${(index + 1).toString().padStart(2, ' ')}. ${artist.name}`
 							).join('\n');
-							output = `🎵 Your Top Artists (${timeRangeDisplay}):\n\n${artistList}`;
+							output = `🎵 Your Top Artists:\n\n${artistList}`;
 						}
 					} catch {
 						output = '🎵 Failed to fetch top artists';
@@ -265,7 +258,15 @@ export default function Batcave() {
 					break;
 				}
 				default:
-					output = command.output;
+					// Handle dynamic outputs first
+					if (command.output === 'DYNAMIC_SEX_TAPE_TITLE') {
+						const sexTapeTitles = (terminalCommands as typeof terminalCommands & { sexTapeTitles: string[] }).sexTapeTitles;
+						const randomTitle = sexTapeTitles[Math.floor(Math.random() * sexTapeTitles.length)];
+						output = `${randomTitle}: Title of your sex tape.`;
+					} else {
+						output = command.output;
+					}
+					
 					// Replace display links with clickable links if links exist
 					if ('links' in command && command.links) {
 						for (const [, linkData] of Object.entries(command.links as CommandLinks)) {

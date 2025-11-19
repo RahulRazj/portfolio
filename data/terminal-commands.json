@@ -8,7 +8,7 @@
             ],
             "description": "Show available commands",
             "usage": "help [command]",
-            "output": "Available commands:\n- help (h, ?): Show this help message\n- clear (cls, c): Clear terminal\n- whoami (who): Show current user\n- date (time): Show current date and time\n- ls (dir, list): List files\n- pwd (path): Show current directory\n- about (me, info): About me\n- skills (tech, technologies): Show my skills\n- projects (work, portfolio): Show my projects\n- contact (email, reach): Show contact information\n- spot: Spotify integration commands\n- batman (quote, inspire): Show Batman quote\n- exit (quit, logout): Return to Gotham",
+            "output": "Available commands:\n- help (h, ?): Show this help message\n- clear (cls, c): Clear terminal\n- whoami (who): Show current user\n- date (time): Show current date and time\n- ls (dir, list): List files\n- pwd (path): Show current directory\n- about (me, info): About me\n- skills (tech, technologies): Show my skills\n- projects (work, portfolio): Show my projects\n- contact (email, reach): Show contact information\n- batman (quote, inspire): Show Batman quote\n- exit (quit, logout): Return to Gotham",
             "hidden": false
         },
         {
@@ -202,7 +202,7 @@
             "description": "Spotify integration commands",
             "usage": "spot [command]",
             "output": "🎵 Spotify Commands - Batman's Playlist Manager\n\nUsage: spot <command> [options]\n\nAvailable commands:\n  currently-playing (cp, now)    Show currently playing track\n  top-tracks (tt, tracks)        Show top tracks [limit] [timerange]\n  top-artists (ta, artists)      Show top artists [limit] [timerange]\n  help (h, ?)                    Show this help\n\nExamples:\n  spot currently-playing\n  spot tt 20                     # Show 20 top tracks\n  spot tt 15 short               # Show 15 tracks (short term)\n  spot ta 10 long                # Show 10 artists (long term)\n",
-            "hidden": false
+            "hidden": true
         },
         {
             "name": "spot help",
@@ -213,7 +213,7 @@
             "description": "Show Spotify commands help",
             "usage": "spot help",
             "output": "🎵 Spotify Commands - Batman's Playlist Manager\n\nUsage: spot <command> [options]\n\nAvailable commands:\n  currently-playing (cp, now)    Show currently playing track\n  top-tracks (tt, tracks)        Show top tracks [limit] [timerange]\n  top-artists (ta, artists)      Show top artists [limit] [timerange]\n  help (h, ?)                    Show this help\n\nExamples:\n  spot currently-playing\n  spot tt 20                     # Show 20 top tracks\n  spot tt 15 short               # Show 15 tracks (short term)\n  spot ta 10 long                # Show 10 artists (long term)\n",
-            "hidden": false
+            "hidden": true
         },
         {
             "name": "spot currently-playing",
@@ -224,7 +224,7 @@
             "description": "Show currently playing track",
             "usage": "spot currently-playing",
             "output": "SPOTIFY_CURRENTLY_PLAYING",
-            "hidden": false
+            "hidden": true
         },
         {
             "name": "spot top-tracks",
@@ -235,7 +235,7 @@
             "description": "Show top tracks",
             "usage": "spot top-tracks",
             "output": "SPOTIFY_TOP_TRACKS",
-            "hidden": false
+            "hidden": true
         },
         {
             "name": "spot top-artists",
@@ -246,7 +246,7 @@
             "description": "Show top artists",
             "usage": "spot top-artists",
             "output": "SPOTIFY_TOP_ARTISTS",
-            "hidden": false
+            "hidden": true
         }
     ],
     "batmanQuotes": [
@@ -261,6 +261,44 @@
         "Criminals are a superstitious and cowardly lot.",
         "I wear a mask. And that mask, it's not to hide who I am, but to create what I am."
     ],
+    "sexTapeTitles": [
+        "Kind, Sober and Fully Dressed",
+        "I'm Sorry About Tonight",
+        "It's Not Your Fault I Was Terrible",
+        "It Was Slightly Less Unbearable With You",
+        "Not Even Going To Touch That: The Amy Santiago Story",
+        "I'm Horrible At This When Can We Stop?",
+        "Well Done",
+        "I'm With Someone Nothing's Gonna Happen",
+        "Better Not Bite Me In The Ass",
+        "Uh-oh I Hope It Doesn't Get Too Sexual",
+        "Seriously, What Is Taking So Long?",
+        "Blast of Cold Air Coming Out Of That Box",
+        "Why Doesn't Your Mouth Work?",
+        "Hope It Wasn't A Mistake",
+        "I Just Got It Out Of The Vent To Rub It In Your Faces",
+        "One More Butt And You're In Contempt",
+        "I Can't Find Anything And I Don't Know What To Do",
+        "I'm So Confused, I Don't Know What's Happening Right Now",
+        "I'm Shaking, Definitely Gonna Cry",
+        "My Mother Has a Fantastic Basement",
+        "I Came Alone",
+        "That's Not How Holes Work",
+        "Why don't we take this map and this sextant and chart a course to the restaurant?",
+        "Did Not Work At All, But I Love That You Attempted It",
+        "Jake and Amy Are Getting Married Tonight",
+        "Sorry, That Came Out Weird",
+        "It's Hard For Some People",
+        "I Came As Fast As I Could",
+        "You Can Pull Out",
+        "Grabbed Whatever and Yanked",
+        "Show Me The Tip",
+        "She's Coming, Hide!",
+        "I'm Sorry, It Just Slipped Out",
+        "Quite Hard Upon Me",
+        "There's a Demon in Our Jeans",
+        "We Rubbed Off On Each Other Quite a Bit"
+    ],
     "b99EasterEggs": [
         {
             "name": "noice",
@@ -270,8 +308,8 @@
         },
         {
             "name": "title of your sex tape",
-            "output": "Compilation of bad decisions: Title of your sex tape.",
-            "aliases": [],
+            "output": "DYNAMIC_SEX_TAPE_TITLE",
+            "aliases": ["sextape"],
             "hidden": true
         },
         {

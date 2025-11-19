@@ -6,7 +6,8 @@ export async function GET(request: NextRequest) {
     const timeRange = searchParams.get('time_range') || 'medium_term';
     const limit = searchParams.get('limit') || '5';
     
-    const response = await fetch(`https://spot-api-theta.vercel.app/api/top-tracks.js?limit=${limit}&time_range=${timeRange}`);
+    const baseUrl = process.env.SPOTIFY_API_BASE_URL || 'https://spot-api-theta.vercel.app';
+    const response = await fetch(`${baseUrl}/api/top-tracks.js?limit=${limit}&time_period=${timeRange}`);
     
     if (!response.ok) {
       return NextResponse.json(

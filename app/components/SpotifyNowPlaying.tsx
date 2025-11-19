@@ -133,7 +133,7 @@ export default function SpotifyNowPlaying() {
 
   if (isLoading) {
     return (
-      <div className="bg-black/60 backdrop-blur-lg rounded-lg border border-gray-700 p-3 w-full min-w-[280px] md:min-w-[280px] min-w-[48px] md:w-full w-12">
+      <div className="bg-black/60 backdrop-blur-lg rounded-lg border border-gray-700 p-3 w-full md:w-[280px] min-w-[48px] max-w-[48px] md:max-w-none">
         <div className="flex items-center gap-3 md:flex hidden">
           <FaSpotify className="w-6 h-6 text-green-500 animate-pulse" />
           <div className="w-8 h-8 rounded-md bg-gray-700 animate-pulse flex-shrink-0"></div>
@@ -157,7 +157,7 @@ export default function SpotifyNowPlaying() {
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/mouse-events-have-key-events
     <div 
-      className={`bg-black/60 backdrop-blur-lg rounded-lg border transition-all duration-300 p-3 w-full min-w-[280px] md:min-w-[280px] min-w-[48px] md:w-full w-12 relative ${
+      className={`bg-black/60 backdrop-blur-lg rounded-lg border transition-all duration-300 p-3 w-full md:w-[280px] min-w-[48px] max-w-[48px] md:max-w-none relative ${
         currentTrack?.isPlaying 
           ? 'border-green-500/50' 
           : 'border-gray-700'
