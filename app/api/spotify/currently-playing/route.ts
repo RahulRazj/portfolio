@@ -3,7 +3,8 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   try {
     const baseUrl = process.env.SPOTIFY_API_BASE_URL || 'https://spot-api-theta.vercel.app';
-    const response = await fetch(`${baseUrl}/api/currently-playing.js`);
+    // using player-state endpoint to get device info along with currently playing track
+    const response = await fetch(`${baseUrl}/api/player-state.js`);
     
     if (!response.ok) {
       return NextResponse.json(
