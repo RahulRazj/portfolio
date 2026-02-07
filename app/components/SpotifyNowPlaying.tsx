@@ -11,19 +11,42 @@ import { getCurrentlyPlaying, type CurrentlyPlayingResponse, formatDuration } fr
 // For long track titles, it uses a custom scrolling text animation
 
 // Scrolling text component for long titles
-function ScrollingText({ text, className, maxWidth = 140 }: {
+function ScrollingText({
+  text,
+  className,
+  maxWidth = 140,
+}: {
   readonly text: string;
   readonly className?: string;
-  readonly maxWidth?: number
+  readonly maxWidth?: number;
 }) {
   const [isScrolling, setIsScrolling] = useState(false);
+  const [textWidth, setTextWidth] = useState(0);
   const textRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (textRef.current) {
-      const textWidth = textRef.current.scrollWidth;
-      setIsScrolling(textWidth > maxWidth);
-    }
+    if (!textRef.current) return;
+
+    // Measure text width using detached element (safe for hidden layouts)
+    const temp = document.createElement('div');
+    const computed = getComputedStyle(textRef.current);
+
+    temp.style.position = 'absolute';
+    temp.style.visibility = 'hidden';
+    temp.style.whiteSpace = 'nowrap';
+    temp.style.fontFamily = computed.fontFamily;
+    temp.style.fontSize = computed.fontSize;
+    temp.style.fontWeight = computed.fontWeight;
+    temp.style.letterSpacing = computed.letterSpacing;
+
+    temp.textContent = text;
+    document.body.appendChild(temp);
+
+    const width = temp.offsetWidth;
+    document.body.removeChild(temp);
+
+    setTextWidth(width);
+    setIsScrolling(width > maxWidth);
   }, [text, maxWidth]);
 
   if (!isScrolling) {
@@ -31,24 +54,26 @@ function ScrollingText({ text, className, maxWidth = 140 }: {
       <div
         ref={textRef}
         className={`${className} truncate`}
-        style={{ maxWidth: `${maxWidth}px` }}
+        style={{ maxWidth }}
       >
         {text}
       </div>
     );
   }
 
+  // ✅ Correct distance for your existing keyframes
+  const padding = 12; // breathing room so last chars are visible
+  const translateDistance = -(textWidth - maxWidth + padding);
+
   return (
-    <div
-      className="overflow-hidden"
-      style={{ maxWidth: `${maxWidth}px` }}
-    >
+    <div className="overflow-hidden relative" style={{ maxWidth }}>
       <div
         ref={textRef}
         className={`${className} whitespace-nowrap`}
         style={{
-          animation: 'scroll-left-right 10s linear infinite',
-        }}
+          animation: 'scroll-text 9s ease-in-out infinite',
+          '--translate-distance': `${translateDistance}px`,
+        } as React.CSSProperties & { '--translate-distance': string }}
       >
         {text}
       </div>
@@ -79,6 +104,11 @@ export default function SpotifyNowPlaying() {
   const tooltipRef = useRef<HTMLDivElement>(null);
   const hoverRef = useRef<HTMLDivElement>(null);
   const lastTrackId = useRef<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const fetchCurrentlyPlaying = async () => {
     try {
@@ -88,7 +118,7 @@ export default function SpotifyNowPlaying() {
       if (data.isPlaying && data.track) {
         if (data.isPlaying && data.track) {
           lastTrackId.current = data.track.title;
-          setProgress((data.track.progressMs || 0) + 1000); // Add 1 second to account for fetch time
+          setProgress((data.track.progressMs || 0) + 500); // Add .5 second to account for fetch time
         }
       }
     } catch (err) {
@@ -181,15 +211,18 @@ export default function SpotifyNowPlaying() {
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/mouse-events-have-key-events
     <div
       className={`bg-black/60 backdrop-blur-lg rounded-lg border transition-all duration-300 p-3 w-full md:w-[280px] min-w-[48px] max-w-[48px] md:max-w-none relative ${currentTrack?.isPlaying
-          ? 'border-green-500/50 pb-2'
+          ? 'border-green-500/50'
           : 'border-gray-700'
         }`}
       onMouseEnter={() => setShowDesktopHover(true)}
       onMouseLeave={() => setShowDesktopHover(false)}
     >
       <div className="flex flex-col h-full">
-        {/* Desktop view */}
-        <div className="items-center gap-3 md:flex hidden flex-grow">
+
+        {/* ================= DESKTOP MAIN VIEW ================= */}
+        <div className="flex items-center gap-3 flex-grow
+                invisible h-0 overflow-hidden
+                md:visible md:h-auto md:overflow-visible">
           <div className="relative">
             <FaSpotify
               className={`w-5 h-5 transition-colors duration-300 ${currentTrack?.isPlaying ? 'text-green-500' : 'text-gray-500'
@@ -216,12 +249,21 @@ export default function SpotifyNowPlaying() {
           )}
 
           <div className="flex-1 min-w-0">
-            <ScrollingText
-              text={currentTrack?.track?.title || 'Offline'}
-              className={`text-sm font-medium transition-colors duration-300 ${currentTrack?.isPlaying ? 'text-white' : 'text-gray-400'
-                }`}
-              maxWidth={150}
-            />
+            <div className="flex items-center justify-between">
+              <ScrollingText
+                text={currentTrack?.track?.title || 'Offline'}
+                className={`text-sm font-medium transition-colors duration-300 ${currentTrack?.isPlaying ? 'text-white' : 'text-gray-400'
+                  }`}
+                maxWidth={140}
+              />
+              {currentTrack?.track?.songUrl && (
+                <a href={currentTrack.track.songUrl} target="_blank" rel="noopener noreferrer" title="Listen on Spotify">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-green-500 hover:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+              )}
+            </div>
 
             {currentTrack?.track?.artist && (
               <div className="text-sm text-gray-400 truncate">
@@ -237,6 +279,28 @@ export default function SpotifyNowPlaying() {
           </div>
         </div>
 
+        {/* ================= DESKTOP PROGRESS BAR ================= */}
+        {mounted && (
+          <div className="hidden md:block mt-1">
+            {currentTrack?.isPlaying && currentTrack?.track && (
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-gray-400 w-8 text-center">{formatDuration(progress)}</span>
+                <div className="w-full bg-gray-700 rounded-full h-1">
+                  <div
+                    className="bg-green-500 h-1 rounded-full"
+                    style={{
+                      width: `${progressPercentage}%`,
+                      transition: 'width 1s linear',
+                    }}
+                  ></div>
+                </div>
+                <span className="text-[10px] text-gray-400 w-8 text-center">{formatDuration(currentTrack.track.durationMs!)}</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ================= MOBILE MAIN VIEW (ICON ONLY) ================= */}
         <div className="md:hidden relative">
           <button
             className="flex items-center justify-center cursor-pointer bg-transparent border-none p-0 w-full h-full"
@@ -256,6 +320,7 @@ export default function SpotifyNowPlaying() {
             </div>
           </button>
 
+          {/* ================= MOBILE TOOLTIP ================= */}
           {showMobileTooltip && (
             <div
               ref={tooltipRef}
@@ -276,9 +341,20 @@ export default function SpotifyNowPlaying() {
                 )}
 
                 <div className="flex-1 min-w-0">
-                  <div className={`text-sm font-medium mb-1 ${currentTrack?.isPlaying ? 'text-white' : 'text-gray-400'
-                    }`}>
-                    {currentTrack?.track?.title || 'Offline'}
+                  <div className="flex items-center justify-between">
+                    <div
+                      className={`text-sm font-medium mb-1 ${currentTrack?.isPlaying ? 'text-white' : 'text-gray-400'
+                        }`}
+                    >
+                      {currentTrack?.track?.title || 'Offline'}
+                    </div>
+                    {currentTrack?.track?.songUrl && (
+                      <a href={currentTrack.track.songUrl} target="_blank" rel="noopener noreferrer" title="Listen on Spotify">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-green-500 hover:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </a>
+                    )}
                   </div>
 
                   {currentTrack?.track?.artist && (
@@ -294,34 +370,34 @@ export default function SpotifyNowPlaying() {
                   )}
                 </div>
               </div>
-              {currentTrack?.isPlaying && currentTrack?.track && (
-                <div className="mt-2">
+
+              {/* MOBILE TOOLTIP PROGRESS BAR */}
+              {mounted && currentTrack?.isPlaying && currentTrack?.track && (
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="text-xs text-gray-400 w-10 text-center">{formatDuration(progress)}</span>
                   <div className="w-full bg-gray-700 rounded-full h-1">
                     <div
                       className="bg-green-500 h-1 rounded-full"
                       style={{ width: `${progressPercentage}%` }}
                     ></div>
                   </div>
-                  <div className="flex justify-between text-xs text-gray-400 mt-1">
-                    <span>{formatDuration(progress)}</span>
-                    <span>{formatDuration(currentTrack.track.durationMs!)}</span>
-                  </div>
+                  <span className="text-xs text-gray-400 w-10 text-center">{formatDuration(currentTrack.track.durationMs!)}</span>
                 </div>
               )}
             </div>
           )}
         </div>
 
-        {/* Desktop Hover Popup */}
-        {showDesktopHover && currentTrack?.track && (
-          <div 
+        {/* ================= DESKTOP HOVER POPUP ================= */}
+        {mounted && showDesktopHover && currentTrack?.track && (
+          <div
             ref={hoverRef}
             className="absolute top-1/2 left-full transform -translate-y-1/2 ml-2 bg-black/95 backdrop-blur-lg rounded-lg border border-gray-700 p-4 w-64 z-50 hidden md:block"
           >
             {currentTrack?.track?.image && (
               <div className="w-full aspect-square rounded-lg overflow-hidden bg-gray-800 mb-4">
-                <Image 
-                  src={currentTrack.track.image} 
+                <Image
+                  src={currentTrack.track.image}
                   alt={`${currentTrack.track.album} album cover`}
                   width={240}
                   height={240}
@@ -330,30 +406,41 @@ export default function SpotifyNowPlaying() {
                 />
               </div>
             )}
-            
+
             <div className="text-center space-y-2">
-              <div className={`text-lg font-bold ${
-                currentTrack?.isPlaying ? 'text-white' : 'text-gray-400'
-              }`}>
-                {currentTrack?.track?.title || 'Offline'}
+              <div className="flex items-center justify-center">
+                <div
+                  className={`text-lg font-bold ${currentTrack?.isPlaying ? 'text-white' : 'text-gray-400'
+                    }`}
+                >
+                  {currentTrack?.track?.title || 'Offline'}
+                </div>
+                {currentTrack?.track?.songUrl && (
+                  <a href={currentTrack.track.songUrl} target="_blank" rel="noopener noreferrer" title="Listen on Spotify" className="ml-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500 hover:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </a>
+                )}
               </div>
-              
+
+
               {currentTrack?.track?.artist && (
                 <div className="text-gray-300 text-base">
                   {currentTrack.track.artist}
                 </div>
               )}
-              
+
               {currentTrack?.track?.album && (
                 <div className="text-gray-400 text-sm">
                   {currentTrack.track.album}
                 </div>
               )}
 
-              {currentTrack?.isPlaying && currentTrack?.track && (
+              {currentTrack?.isPlaying && (
                 <div className="mt-3">
                   <div className="w-full bg-gray-700 rounded-full h-1.5">
-                    <div 
+                    <div
                       className="bg-green-500 h-1.5 rounded-full"
                       style={{ width: `${progressPercentage}%` }}
                     ></div>
@@ -378,27 +465,8 @@ export default function SpotifyNowPlaying() {
           </div>
         )}
 
-        {/* Progress Bar for Desktop (at the bottom) */}
-        {currentTrack?.isPlaying && currentTrack?.track && (
-          <div className="mt-1">
-            <div className="w-full bg-gray-700 rounded-full h-1">
-              <div
-                className="bg-green-500 h-1 rounded-full"
-                style={{
-                  width: `${progressPercentage}%`,
-                  transition: 'width 1s linear',
-                }}
-              ></div>
-            </div>
-            <div className="flex justify-between text-[10px] text-gray-400 mt-1 px-1">
-              <span>{formatDuration(progress)}</span>
-              <span>
-                {formatDuration(currentTrack.track.durationMs!)}
-              </span>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
+
 }

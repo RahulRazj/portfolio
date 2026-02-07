@@ -11,13 +11,14 @@ body {
   0% {
     transform: translateX(0);
   }
-  15% {
+  20% {
     transform: translateX(0);
   }
-  85% {
+  80% {
     transform: translateX(var(--translate-distance, -60px));
   }
   100% {
     transform: translateX(var(--translate-distance, -60px));
   }
 }
+
