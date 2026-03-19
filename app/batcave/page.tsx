@@ -122,6 +122,11 @@ export default function Batcave() {
 					output = quotes[Math.floor(Math.random() * quotes.length)];
 					break;
 				}
+				case 'philosophy': {
+					const philosophyQuotes = terminalCommands.philosophy;
+					output = philosophyQuotes[Math.floor(Math.random() * philosophyQuotes.length)];
+					break;
+				}
 				case 'exit':
 				case 'gui':
 					globalThis.location.href = '/';
@@ -263,6 +268,9 @@ export default function Batcave() {
 						const sexTapeTitles = (terminalCommands as typeof terminalCommands & { sexTapeTitles: string[] }).sexTapeTitles;
 						const randomTitle = sexTapeTitles[Math.floor(Math.random() * sexTapeTitles.length)];
 						output = `${randomTitle}: Title of your sex tape.`;
+					} else if (command.output === 'PHILOSOPHY_QUOTES') {
+						const philosophyQuotes = terminalCommands.philosophy;
+						output = philosophyQuotes[Math.floor(Math.random() * philosophyQuotes.length)];
 					} else {
 						output = command.output;
 					}

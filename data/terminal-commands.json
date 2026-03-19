@@ -247,6 +247,19 @@
             "usage": "spot top-artists",
             "output": "SPOTIFY_TOP_ARTISTS",
             "hidden": true
+        },
+        {
+            "name": "philosophy",
+            "aliases": [
+                "wisdom",
+                "life",
+                "phils",
+                "phil"
+            ],
+            "description": "Show philosophical quotes",
+            "usage": "philosophy",
+            "output": "PHILOSOPHY_QUOTES",
+            "hidden": true
         }
     ],
     "batmanQuotes": [
@@ -402,5 +415,32 @@
             "aliases": [],
             "hidden": true
         }
+    ],
+    "philosophy": [
+        "When life gives you lemonade, make lemons. Life will be all like, 'Whaaaaaat?!'",
+        "Always look people in the eyes. Even if they're blind. Just say, 'I am looking you in the eyes.'",
+        "If you get pulled over for speeding, tell the policeman your spouse has diarrhea.",
+        "You only get one chance at a first impression. I suggest Julia Child, because it's easiest to do. ('Save the giblets!')",
+        "The most amazing things that can happen to a human being will happen to you, if you just lower your expectations.",
+        "Dance until your feet hurt. Sing until your lungs hurt. Act until you're William Hurt.",
+        "Take a lesson from parakeets. If you're ever feeling lonely, just eat in front of a mirror.",
+        "Marry someone who looks sexy disappointed.",
+        "You can tell a lot about a person from their biography.",
+        "Watch a sunrise at least once a day.",
+        "If you love something, set it free. Unless it's a tiger.",
+        "If you're ever in a jam, a crayon scrunched up under your nose makes a good pretend mustache.",
+        "Older black ladies make the best iced tea.",
+        "Never be afraid to reach for the stars because even if you fall, you'll always be wearing a Parent-chute.",
+        "If my son thinks of me as one of his idiot friends, I've succeeded as a dad.",
+        "A happy kid is like an antidepressant. But a natural one, not the kind your husband has to find in your jewelry drawer.",
+        "Think inside the box. That's right, I said inside. Because while everyone is chasing each other outside, you know what the box is? Empty.",
+        "Give a kid a bird, and he becomes one of those weird dudes who walk around with a bird on their shoulder. But give him a pair of wings, he can fly - unless he has absolutely no hand-eye coordination.",
+        "Sometimes God closes a door, but sometimes he closes it so hard, you can't get your wife out.",
+        "Success is 1% inspiration, 98% perspiration, and 2% attention to detail.",
+        "If you're ever feeling down, just think of the three C's: Coffee, Cereal, and Comedy.",
+        "If you want to be truly happy in life, surround yourself with people who make you laugh. And also, people who bring snacks.",
+        "Always keep the rhythm in your feet and a little party in your shoulders.",
+        "Act like a parent, talk like a peer. I call it peer-renting.",
+        "If you want intense family drama, rent Spy Kids."
     ]
 }
