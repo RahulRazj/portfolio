@@ -2,163 +2,165 @@
 const BASE_API_URL = '/api/spotify';
 
 export interface CurrentlyPlayingResponse {
-  isPlaying: boolean;
-  track?: {
-    title: string;
-    artist: string;
-    album: string;
-    image?: string;
-    songUrl?: string;
-  };
-  error?: string;
+	isPlaying: boolean;
+	track?: {
+		title: string;
+		artist: string;
+		album: string;
+		image?: string;
+		songUrl?: string;
+		deviceName?: string;
+		deviceType?: string;
+		progressMs?: number;
+		durationMs?: number;
+	};
+	error?: string;
 }
 
 export interface TopTracksResponse {
-  tracks: Array<{
-    title: string;
-    artist: string;
-    album: string;
-    image?: string;
-    external_urls?: {
-      spotify: string;
-    };
-    popularity?: number;
-  }>;
-  error?: string;
+	tracks: Array<{
+		title: string;
+		artist: string;
+		album: string;
+		image?: string;
+		external_urls?: {
+			spotify: string;
+		};
+		popularity?: number;
+	}>;
+	error?: string;
 }
 
 export interface TopArtistsResponse {
-  artists: Array<{
-    name: string;
-    image?: string;
-    external_urls?: {
-      spotify: string;
-    };
-    popularity?: number;
-    genres?: string[];
-  }>;
-  error?: string;
+	artists: Array<{
+		name: string;
+		image?: string;
+		external_urls?: {
+			spotify: string;
+		};
+		popularity?: number;
+		genres?: string[];
+	}>;
+	error?: string;
 }
 
 // Fetch currently playing track
 export async function getCurrentlyPlaying(): Promise<CurrentlyPlayingResponse> {
-  try {
-    const response = await fetch(`${BASE_API_URL}/currently-playing`);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    // Handle the case where nothing is playing
-    if (!data || data.error || !data.isPlaying) {
-      return {
-        isPlaying: false,
-        error: data?.error || undefined
-      };
-    }
+	try {
+		const response = await fetch(`${BASE_API_URL}/currently-playing`);
 
-    return {
-      isPlaying: true,
-      track: {
-        title: data.title || 'Unknown Track',
-        artist: data.artist || 'Unknown Artist',
-        album: data.album || 'Unknown Album',
-        image: data.albumImageUrl,
-        songUrl: data.songUrl
-      }
-    };
-  } catch (error) {
-    console.error('Error fetching currently playing:', error);
-    return {
-      isPlaying: false,
-      error: 'Failed to fetch currently playing'
-    };
-  }
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+
+		const data = await response.json();
+
+		// Handle the case where nothing is playing
+		if (!data || data.error || !data.isPlaying) {
+			return {
+				isPlaying: false,
+				error: data?.error || undefined
+			};
+		}
+
+		return {
+			isPlaying: true,
+			track: {
+				title: data.title || 'Unknown Track',
+				artist: data.artist || 'Unknown Artist',
+				album: data.album || 'Unknown Album',
+				image: data.albumImageUrl,
+				songUrl: data.songUrl,
+				deviceName: data.deviceName,
+				deviceType: data.deviceType,
+				progressMs: data.progressMs,
+				durationMs: data.durationMs
+			}
+		};
+	} catch (error) {
+		console.error('Error fetching currently playing:', error);
+		return {
+			isPlaying: false,
+			error: 'Failed to fetch currently playing'
+		};
+	}
 }
 
 // Fetch top tracks
-export async function getTopTracks(options?: { 
-  timeRange?: 'short_term' | 'medium_term' | 'long_term';
-  limit?: number;
-}): Promise<TopTracksResponse> {
-  try {
-    const timeRange = options?.timeRange || 'medium_term';
-    const limit = options?.limit || 5;
-    
-    const response = await fetch(`${BASE_API_URL}/top-tracks?time_range=${timeRange}&limit=${limit}`);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    if (data.error) {
-      return {
-        tracks: [],
-        error: data.error
-      };
-    }
-    
-    return {
-      tracks: data.tracks || []
-    };
-  } catch (error) {
-    console.error('Error fetching top tracks:', error);
-    return {
-      tracks: [],
-      error: 'Failed to fetch top tracks'
-    };
-  }
+export async function getTopTracks(options?: { timeRange?: 'short_term' | 'medium_term' | 'long_term'; limit?: number }): Promise<TopTracksResponse> {
+	try {
+		const timeRange = options?.timeRange || 'medium_term';
+		const limit = options?.limit || 5;
+
+		const response = await fetch(`${BASE_API_URL}/top-tracks?time_range=${timeRange}&limit=${limit}`);
+
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+
+		const data = await response.json();
+
+		if (data.error) {
+			return {
+				tracks: [],
+				error: data.error
+			};
+		}
+
+		return {
+			tracks: data.tracks || []
+		};
+	} catch (error) {
+		console.error('Error fetching top tracks:', error);
+		return {
+			tracks: [],
+			error: 'Failed to fetch top tracks'
+		};
+	}
 }
 
 // Fetch top artists
-export async function getTopArtists(options?: { 
-  timeRange?: 'short_term' | 'medium_term' | 'long_term';
-  limit?: number;
-}): Promise<TopArtistsResponse> {
-  try {
-    const timeRange = options?.timeRange || 'medium_term';
-    const limit = options?.limit || 10;
-    
-    const response = await fetch(`${BASE_API_URL}/top-artists?time_range=${timeRange}&limit=${limit}`);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    if (data.error) {
-      return {
-        artists: [],
-        error: data.error
-      };
-    }
-    
-    return {
-      artists: data.artists || []
-    };
-  } catch (error) {
-    console.error('Error fetching top artists:', error);
-    return {
-      artists: [],
-      error: 'Failed to fetch top artists'
-    };
-  }
+export async function getTopArtists(options?: { timeRange?: 'short_term' | 'medium_term' | 'long_term'; limit?: number }): Promise<TopArtistsResponse> {
+	try {
+		const timeRange = options?.timeRange || 'medium_term';
+		const limit = options?.limit || 10;
+
+		const response = await fetch(`${BASE_API_URL}/top-artists?time_range=${timeRange}&limit=${limit}`);
+
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		}
+
+		const data = await response.json();
+
+		if (data.error) {
+			return {
+				artists: [],
+				error: data.error
+			};
+		}
+
+		return {
+			artists: data.artists || []
+		};
+	} catch (error) {
+		console.error('Error fetching top artists:', error);
+		return {
+			artists: [],
+			error: 'Failed to fetch top artists'
+		};
+	}
 }
 
 // Utility function to format duration
 export function formatDuration(ms: number): string {
-  const minutes = Math.floor(ms / 60000);
-  const seconds = Math.floor((ms % 60000) / 1000);
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+	const minutes = Math.floor(ms / 60000);
+	const seconds = Math.floor((ms % 60000) / 1000);
+	return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
 
 // Utility function to get progress percentage
 export function getProgressPercentage(progress_ms: number, duration_ms: number): number {
-  if (!progress_ms || !duration_ms) return 0;
-  return (progress_ms / duration_ms) * 100;
+	if (!progress_ms || !duration_ms) return 0;
+	return (progress_ms / duration_ms) * 100;
 }
